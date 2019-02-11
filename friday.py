@@ -3,8 +3,6 @@ ID: yaagnto2
 LANG: PYTHON3
 TASK: friday
 """
-from collections import Iterable
-from typing import Iterator
 
 
 def is_leap_year(year: int) -> bool:
@@ -14,48 +12,41 @@ def is_leap_year(year: int) -> bool:
         return year % 4 == 0
 
 
-class Date(Iterable):
-    Mouths = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    Week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+def get_months(year) -> list:
+    months = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    months[2] = 29 if is_leap_year(year) else 28
+    return months
 
-    def __init__(self):
-        self.y = 1900
-        self.m = 1
-        self.d = 1
-        self.mouths = Date.Mouths.copy()
-        self.w = 0
 
-    def __iter__(self) -> Iterator:
-        return self
-
-    def __next__(self):
-        if self.w != 6:
-            self.w += 1
-        else:
-            self.w = 0
-        if self.d != self.mouths[self.m]:
-            self.d += 1
-        else:
-            self.d = 1
-            if self.m != 12:
-                self.m += 1
-            else:
-                self.m = 1
-                self.y += 1
-                self.mouths[2] = 29 if is_leap_year(self.y) else 28
-        return self
-
-    def __str__(self) -> str:
-        return '{}-{}-{}, {}'.format(self.y, self.m, self.d, Date.Week[self.w])
+def get_offset(year, month, day) -> int:
+    assert year >= 1900
+    months = get_months(year)
+    return sum(map(lambda x: 366 if is_leap_year(x) else 365, range(1900, year))) + sum(
+        map(lambda x: months[x], range(1, month))) + day - 1
 
 
 with open('friday.in', 'r') as fin:
     with open('friday.out', 'w') as fout:
         n = int(fin.readline().strip())
         res = {w: 0 for w in range(7)}
-        for date in Date():
-            if date.y >= n + 1900:
+        y, m, d = (1900, 1, 13)
+        offset = get_offset(y, m, d)
+        w = offset % 7
+        mns = get_months(y)
+        limit = 1900 + n
+
+        for _ in range(400 * 12):
+            if y >= limit:
                 break
-            if date.d == 13:
-                res[date.w] += 1
+
+            res[w] += 1
+
+            offset += mns[m]
+            w = offset % 7
+            if m != 12:
+                m += 1
+            else:
+                m = 1
+                y += 1
+                mns = get_months(y)
         fout.write(' '.join(map(lambda x: str(res[x]), [5, 6, 0, 1, 2, 3, 4])) + '\n')

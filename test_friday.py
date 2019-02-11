@@ -1,8 +1,9 @@
 from unittest import TestCase
 
-from friday import is_leap_year, Date
+from friday import is_leap_year, get_offset
 import calendar
 import datetime
+import random
 
 
 def add_one_day(date: datetime.date) -> datetime.date:
@@ -15,14 +16,10 @@ class TestFriday(TestCase):
             is_leap = is_leap_year(i)
             self.assertEqual(is_leap, calendar.isleap(i))
 
-    def test_date(self):
-        date = Date()
-        date2 = datetime.date(1900, 1, 1)
-        for i in range(365 * 400):
-            date2 = add_one_day(date2)
-            date = date.__next__()
-            self.assertEqual(date.y, date2.year)
-            self.assertEqual(date.m, date2.month,
-                             'date\' mouths:{}, date1:{}  date2:{}'.format(date.mouths, date, date2))
-            self.assertEqual(date.d, date2.day)
-            self.assertEqual(date.w, date2.weekday())
+    def test_get_weekday(self):
+        date = datetime.datetime(1900, 1, 1)
+        for _ in range(3000):
+            date += datetime.timedelta(days=random.randint(1, 10))
+            act = get_offset(date.year, date.month, date.day) % 7
+            exp = calendar.weekday(date.year, date.month, date.day)
+            self.assertEqual(exp, act)
