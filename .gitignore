@@ -1,3 +1,5 @@
+*.out
+
 # Created by .ignore support plugin (hsz.mobi)
 ### VisualStudioCode template
 .vscode/*
@@ -176,4 +178,3 @@ fabric.properties
 
 # Editor-based Rest Client
 .idea/httpRequests
-
