@@ -84,10 +84,8 @@ int main() {
     }
 
     for (auto t:{d90, d180, d270}) {
-        array_print(t);
         char combination[10][10];
         reflection(combination, t);
-        array_print(combination);
         if (array_equals(translated, combination)) {
             ans = 5;
             goto output;
