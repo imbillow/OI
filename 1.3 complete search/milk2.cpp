@@ -8,10 +8,10 @@ TASK: milk2
 #include <iostream>
 #include <vector>
 
-struct Span {
+struct RoundSpan {
     int left, right;
 
-    Span(int l, int r) : left(l), right(r) {}
+    RoundSpan(int l, int r) : left(l), right(r) {}
 
     int width() { return right - left; }
 };
@@ -35,14 +35,14 @@ int main() {
     int n;
     fin >> n;
 
-    vector<Span> spans;
+    vector<RoundSpan> spans;
 
     for (int i = 0; i < n; i++) {
         int l, r;
         fin >> l >> r;
 
         auto ss = find_all(spans.begin(), spans.end(),
-                           [=](Span &sp) { return sp.left <= r && sp.right >= l; });
+                           [=](RoundSpan &sp) { return sp.left <= r && sp.right >= l; });
         if (ss.empty())
             spans.emplace_back(l, r);
         else {
@@ -53,16 +53,16 @@ int main() {
 
             spans.erase(
                     remove_if(spans.begin(), spans.end(),
-                              [&](Span &s) { return s.left >= l && s.right <= r; }),
+                              [&](RoundSpan &s) { return s.left >= l && s.right <= r; }),
                     spans.end());
             spans.emplace_back(l, r);
         }
     }
 
     sort(spans.begin(), spans.end(),
-         [](Span &a, Span &b) { return a.left < b.left; });
+         [](RoundSpan &a, RoundSpan &b) { return a.left < b.left; });
     int maxi = max_element(spans.begin(), spans.end(),
-                           [](Span &a, Span &b) { return a.width() < b.width(); })
+                           [](RoundSpan &a, RoundSpan &b) { return a.width() < b.width(); })
             ->width();
     int mini = 0;
     if (spans.size() > 1) {
