@@ -5,6 +5,7 @@
     <sourceRoots>
       <file path="$PROJECT_DIR$/1.2 just a try" />
       <file path="$PROJECT_DIR$/1.3 complete search" />
+      <file path="$PROJECT_DIR$/1.4 greedy" />
       <file path="$PROJECT_DIR$/test" />
     </sourceRoots>
   </component>
