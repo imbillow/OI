@@ -12,4 +12,5 @@ add_executable(dualpal "1.3 complete search/dualpal.cpp")
 
 include_directories("1.4 greedy")
 
-add_executable(milk "1.4 greedy/milk")
+add_executable(milk "1.4 greedy/milk.cpp")
+add_executable(barn1 "1.4 greedy/barn1.cpp")
