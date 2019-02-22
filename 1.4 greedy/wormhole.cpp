@@ -10,95 +10,60 @@ TASK: wormhole
 #include <tuple>
 
 using namespace std;
+const int MAX_N = 13;
+int N, X[MAX_N], Y[MAX_N];
+int partner[MAX_N];
+int on_right[MAX_N];
 
-struct point_t {
-    int64_t x, y;
-};
-
-bool operator==(const point_t &a, const point_t &b) {
-    return a.x == b.x && a.y == b.y;
-}
-
-bool operator!=(const point_t &a, const point_t &b) {
-    return !(a == b);
-}
-
-typedef tuple<point_t, point_t> pair_t;
-int times = 0;
-
-
-bool connected(const pair_t &a, const pair_t &b) {
-    if (a == b)return false;
-    auto a2 = get<1>(a);
-    auto b1 = get<0>(b);
-    return a2.y == b1.y && a2.x < b1.x;
-}
-
-bool pairs_check(const vector<pair_t> &pairs) {
-    if (pairs.size() < 2)
-        return true;
-
-    auto prs{pairs};
-    for (auto &pr  : pairs) {
-        prs.emplace_back(get<1>(pr), get<0>(pr));
-    }
-
-    auto pr = prs.back();
-    auto head{pr};
-    prs.pop_back();
-
-    while (!prs.empty()) {
-        auto it = find_if(prs.begin(), prs.end(),
-                          [&](pair_t &p) { return connected(pr, p); });
-        if (it == prs.end()) {
-            pr = prs.back();
-            head = pr;
-            prs.pop_back();
-            continue;
+bool is_cycle() {
+    for (int x = 1; x <= N; ++x) {
+        int p = x;
+        for (int y = 0; y < N; ++y) {
+            p = on_right[partner[p]];
         }
-        pr = *it;
-        if (connected(pr, head))
-            return false;
-        prs.erase(it);
+        if (p != 0)
+            return true;
     }
-    return !connected(pr, head);
+    return false;
 }
 
-void rec_fun(vector<point_t> &points, vector<pair_t> &pairs) {
-    if (!pairs_check(pairs)) return;
-    else if (points.empty()) {
-        times++;
-        return;
+int solve() {
+    int total = 0;
+
+    int x = 1;
+    for (; x <= N; x++)
+        if (partner[x] == 0)break;
+
+    if (x > N) {
+        if (is_cycle())
+            return 1;
+        else return 0;
     }
 
-    auto p1 = points.back();
-    points.pop_back();
-    for (point_t &p2:points) {
-        if (p2.y == p1.y) continue;
-        pair_t _pair{p1, p2};
-
-        vector<point_t> _points{};
-        remove_copy(points.begin(), points.end(), back_inserter(_points), p2);
-
-        vector<pair_t> _pairs{};
-        copy(pairs.begin(), pairs.end(), back_inserter(_pairs));
-
-        _pairs.push_back(_pair);
-        rec_fun(_points, _pairs);
-    }
+    for (int y = x + 1; y <= N; ++y)
+        if (partner[y] == 0) {
+            partner[x] = y;
+            partner[y] = x;
+            total += solve();
+            partner[x] = partner[y] = 0;
+        }
+    return total;
 }
 
 int main() {
     ifstream fin("wormhole.in");
     ofstream fout("wormhole.out");
-    size_t n;
-    fin >> n;
-    vector<point_t> points(n);
-    for (size_t i = 0; i < n; i++)
-        fin >> points[i].x >> points[i].y;
+    fin >> N;
+    for (size_t i = 1; i <= N; i++)
+        fin >> X[i] >> Y[i];
 
-    vector<pair_t> _{};
-    rec_fun(points, _);
-    fout << times * (n / 2) << endl;
+    for (int i = 1; i <= N; ++i) {
+        for (int j = 1; j <= N; ++j) {
+            if (Y[i] == Y[j] && X[i] < X[j])
+                if (on_right[i] == 0 || X[j] < X[on_right[i]])
+                    on_right[i] = j;
+        }
+    }
+    fout << solve() << endl;
     return 0;
 }
