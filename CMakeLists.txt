@@ -18,4 +18,5 @@ add_executable(crypt1 "1.4 greedy/crypt1.cpp")
 add_executable(combo "1.4 greedy/combo.cpp")
 add_executable(wormhole "1.4 greedy/wormhole.cpp")
 add_executable(test "1.4 greedy/test.cpp")
+add_executable(skidesign "1.4 greedy/skidesign.cpp")
 
