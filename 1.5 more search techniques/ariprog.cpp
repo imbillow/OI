@@ -23,16 +23,11 @@ int main() {
     ofstream fout("ariprog.out");
     fin >> N >> M;
 
-    uint32_t MM = M * M;
-    uint32_t MM2 = 2 * MM;
-    uint32_t Mp1 = M + 1;
-    auto _seqSize = static_cast<uint32_t>(Mp1 * Mp1 + 1);
-
-    Seq.resize(_seqSize);
-
     for (int i = 1; i <= M; ++i)
         Squares[i] = i * i;
 
+    auto _seqSize = static_cast<uint32_t>(pow(M + 1, 2) + 1);
+    Seq.resize(_seqSize);
     int p, q, v;
     for (int i = 0; i <= M; ++i) {
         p = Squares[i];
@@ -43,16 +38,15 @@ int main() {
             BiSquares[v] = true;
         }
     }
-
-    auto _seqEnd = Seq.begin() + _seqSize;
-    sort(Seq.begin(), _seqEnd);
-    Seq.erase(unique(Seq.begin(), _seqEnd), Seq.end());
+    sort(Seq.begin(), Seq.end());
+    Seq.erase(unique(Seq.begin(), Seq.end()), Seq.end());
 
     int a, b;
     bool ok, exist{};
-    int max_b = MM2 / (N - 1), max_a;
+    uint32_t seq_max_v = 2 * M * M;
+    int max_b = seq_max_v / (N - 1), max_a;
     for (b = 1; b <= max_b; ++b) {
-        max_a = MM2 - b * (N - 1);
+        max_a = seq_max_v - b * (N - 1);
         for (int i = 0; i < Seq.size() && Seq[i] <= max_a; ++i) {
             a = Seq[i];
             ok = true;
