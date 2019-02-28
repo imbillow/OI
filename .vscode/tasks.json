@@ -1,0 +1,26 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "echoCommand": true,
+    "options": {
+        "env": {
+            "vcvarsall": "\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Preview/VC/Auxiliary/Build/vcvarsall.bat\" x64",
+        },
+        "cwd": "${fileDirname}"
+    },
+    "tasks": [
+        {
+            "label": "compile",
+            "type": "process",
+            "command": "cmd",
+            "args": [
+                "/C %vcvarsall% && cl /Od /Zi /EHsc ${fileBasename}",
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
