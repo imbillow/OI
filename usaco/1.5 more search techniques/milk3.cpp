@@ -17,11 +17,12 @@ vector<int> sol;
 int A_MAX, B_MAX, C_MAX;
 int A, B, C;
 
-bool visited(const int &a, const int &b, const int &c)
+bool visited(const int& a, const int& b, const int& c)
 {
 	return _visited.find(state_t{a, b, c}) != _visited.end();
 }
-void pour(int &a, int &b, int &b_max)
+
+void pour(int& a, int& b, int& b_max)
 {
 	if (a + b <= b_max)
 	{
@@ -34,6 +35,7 @@ void pour(int &a, int &b, int &b_max)
 		b = b_max;
 	}
 }
+
 void solve()
 {
 	if (visited(A, B, C))
@@ -99,7 +101,8 @@ void solve()
 		}
 	}
 }
-int main()
+
+auto main() -> int
 {
 	ifstream fin("milk3.in");
 	ofstream fout("milk3.out");
