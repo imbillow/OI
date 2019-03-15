@@ -23,3 +23,7 @@ include_directories("1.5 more search techniques")
 
 add_executable(ariprog "1.5 more search techniques/ariprog.cpp")
 add_executable(milk3 "1.5 more search techniques/milk3.cpp")
+
+include_directories("1.6 Binary Numbers")
+
+add_executable(numtri "1.6 Binary Numbers/numtri.cpp")

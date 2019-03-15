@@ -4,117 +4,54 @@ LANG: C++14
 TASK: milk3
 */
 #include <algorithm>
-#include <cmath>
 #include <fstream>
 #include <iostream>
-#include <set>
-#include <tuple>
-#include <vector>
+
 using namespace std;
-typedef tuple<int, int, int> state_t;
-set<state_t> _visited;
-vector<int> sol;
+bool _visited[21][21][21];
+bool sol[21];
 int A_MAX, B_MAX, C_MAX;
-int A, B, C;
 
-bool visited(const int& a, const int& b, const int& c)
-{
-	return _visited.find(state_t{a, b, c}) != _visited.end();
+void solve(int a, int b, int c) {
+    if (_visited[a][b][c])
+        return;
+    _visited[a][b][c] = true;
+    if (a == 0)
+        sol[c] = true;
+    if (a > 0) {
+        if (a + b > B_MAX)solve(a + b - B_MAX, B_MAX, c);
+        else solve(0, a + b, c);
+
+        if (a + c > C_MAX)solve(a + c - C_MAX, b, C_MAX);
+        else solve(0, b, a + c);
+    }
+
+    if (b > 0) {
+        if (a + b > A_MAX)solve(A_MAX, a + b - A_MAX, c);
+        else solve(a + b, 0, c);
+
+        if (b + c > C_MAX)solve(a, b + c - C_MAX, C_MAX);
+        else solve(a, 0, b + c);
+    }
+
+    if (c > 0) {
+        if (a + c > A_MAX)solve(A_MAX, b, a + c - A_MAX);
+        else solve(a + c, b, 0);
+
+        if (b + c > B_MAX)solve(a, B_MAX, b + c - B_MAX);
+        else solve(a, b + c, 0);
+    }
 }
 
-void pour(int& a, int& b, int& b_max)
-{
-	if (a + b <= b_max)
-	{
-		b += a;
-		a = 0;
-	}
-	else
-	{
-		a -= b_max - b;
-		b = b_max;
-	}
-}
-
-void solve()
-{
-	if (visited(A, B, C))
-		return;
-	if (A == 0)
-	{
-		cout << A << "\t" << B << "\t" << C << "\t" << endl;
-		sol.emplace_back(C);
-		_visited.insert(state_t{A, B, C});
-	}
-	int a = A, b = B, c = C;
-	if (A > 0)
-	{
-		if (B < B_MAX)
-		{
-			pour(A, B, B_MAX);
-			solve();
-			A = a;
-			B = b;
-		}
-		if (C < C_MAX)
-		{
-			pour(A, C, C_MAX);
-			solve();
-			A = a;
-			C = c;
-		}
-	}
-
-	if (B > 0)
-	{
-		if (A < A_MAX)
-		{
-			pour(B, A, A_MAX);
-			solve();
-			B = b;
-			A = a;
-		}
-		if (C < C_MAX)
-		{
-			pour(B, C, C_MAX);
-			solve();
-			B = b;
-			C = c;
-		}
-	}
-
-	if (C > 0)
-	{
-		if (A < A_MAX)
-		{
-			pour(C, A, A_MAX);
-			solve();
-			C = c;
-			A = a;
-		}
-		if (B < B_MAX)
-		{
-			pour(C, B, B_MAX);
-			solve();
-			B = b;
-			C = c;
-		}
-	}
-}
-
-auto main() -> int
-{
-	ifstream fin("milk3.in");
-	ofstream fout("milk3.out");
-	fin >> A_MAX >> B_MAX >> C_MAX;
-	A = B = 0;
-	C = C_MAX;
-	solve();
-	if (!sol.empty())
-	{
-		for (auto i = sol.begin(); i != sol.end() - 1; ++i)
-			fout << *i << " ";
-		fout << *(sol.end() - 1) << endl;
-	}
-	return 0;
+auto main() -> int {
+    ifstream fin("milk3.in");
+    ofstream fout("milk3.out");
+    fin >> A_MAX >> B_MAX >> C_MAX;
+    solve(0, 0, C_MAX);
+    string ans{};
+    for (int i = 0; i < 21; ++i)
+        if (sol[i])
+            ans += to_string(i) + " ";
+    fout << ans.substr(0, ans.length() - 1) << endl;
+    return 0;
 }
