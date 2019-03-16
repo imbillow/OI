@@ -5,21 +5,18 @@ TASK: numtri
 */
 #include <algorithm>
 #include <fstream>
-#include <iostream>
+#include <cstring>
 
 using namespace std;
-const int MAX_R = 1000;
-int Triangle[MAX_R + 1][MAX_R + 1];
+const int MAX_R = 1001;
+int Triangle[MAX_R][MAX_R];
+int Cache[MAX_R][MAX_R];
 int R;
-int MaxV;
 
-int sol(int k, int r, int c) {
-    if (r > R)return k;
-    for (int x = c; x <= c + 1; ++x) {
-        auto kk = sol(k + Triangle[r][x], r + 1, x);
-        MaxV = max(MaxV, kk);
-    }
-    return MaxV;
+int dfs(int r, int c) {
+    if (Cache[r][c] != -1)return Cache[r][c];
+    else if (r <= R)return Cache[r][c] = max(dfs(r + 1, c), dfs(r + 1, c + 1)) + Triangle[r][c];
+    else return 0;
 }
 
 auto main() -> int {
@@ -31,7 +28,7 @@ auto main() -> int {
             fin >> Triangle[i][j];
         }
     }
-    sol(0, 1, 1);
-    fout << MaxV << endl;
+    memset(Cache, -1, sizeof(int) * MAX_R * MAX_R);
+    fout << dfs(1, 1) << endl;
     return 0;
 }
