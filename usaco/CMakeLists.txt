@@ -27,3 +27,4 @@ add_executable(milk3 "1.5 more search techniques/milk3.cpp")
 include_directories("1.6 Binary Numbers")
 
 add_executable(numtri "1.6 Binary Numbers/numtri.cpp")
+add_executable(pprime "1.6 Binary Numbers/pprime.cpp")
