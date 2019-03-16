@@ -29,3 +29,7 @@ include_directories("1.6 Binary Numbers")
 add_executable(numtri "1.6 Binary Numbers/numtri.cpp")
 add_executable(pprime "1.6 Binary Numbers/pprime.cpp")
 add_executable(sprime "1.6 Binary Numbers/sprime.cpp")
+
+include_directories("2.1 graph theory")
+
+add_executable(castle "2.1 graph theory/castle.cpp")
