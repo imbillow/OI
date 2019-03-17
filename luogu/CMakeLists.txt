@@ -1,0 +1,5 @@
+add_executable(p1023 p1023.cpp)
+add_executable(p1042 p1042.cpp)
+add_executable(P1086 P1086.cpp)
+add_executable(P1098 P1098.cpp)
+add_executable(P3952 P3952.cpp)

@@ -30,7 +30,7 @@ const int MAX_N = 51;
 int M, N;
 int A[MAX_N][MAX_N], G[MAX_N][MAX_N];
 int Opposition[4], Dx[9], Dy[9];
-int counter, largest, largest__create, wall;
+int counter, largest;
 
 vector<vector<Point> > Groups{};
 

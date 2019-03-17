@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.12.0)
-project(usaco-cpp)
 
 include_directories("1.3 complete search")
 
