@@ -15,8 +15,10 @@ int main() {
         b = s[i];
         if (i >= 2 && s[i - 1] == '-') {
             a = s[i - 2];
-            if (b <= a) ns.push_back('-');
-            else if (b - a > 1) {
+            if (b - a > 1 && (
+                    (isdigit(a) && isdigit(b)) ||
+                    (islower(a) && islower(b))
+            )) {
                 xss = "";
                 for (char k = static_cast<char>(a + 1); k < b; ++k) {
                     x = static_cast<char>(p1 == 3 ? '*' :
@@ -28,9 +30,9 @@ int main() {
                 }
                 if (p3 == 2) reverse(xss.begin(), xss.end());
                 ns += xss;
-            }
+            } else if (b - a != 1 && a != '-') ns.push_back('-');
             ns.push_back(b);
-        } else if (b != '-' || i == 0 || i == end) {
+        } else if (b != '-' || i == 0 || i == end || (i >= 1 && s[i - 1] == '-')) {
             ns.push_back(b);
         }
     }
