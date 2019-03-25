@@ -1,3 +1,10 @@
+!usaco/*.out
+!usaco/*.in
+
+
+*.out
+*.in
+
 *.exe
 *.ilk
 *.obj
