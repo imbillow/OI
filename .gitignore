@@ -204,3 +204,5 @@ fabric.properties
 .idea/
 Pipfile.lock
 .gitignore
+
+.vscode/
