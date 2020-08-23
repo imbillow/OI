@@ -4,9 +4,7 @@ using namespace std;
 
 uint64_t L[101];
 
-int
-main()
-{
+int main() {
   int N;
   cin >> N;
   for (size_t i = 0; i < N; i++) {

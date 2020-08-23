@@ -4,9 +4,7 @@
 #include <vector>
 using namespace std;
 
-int
-main()
-{
+int main() {
   unsigned N;
   vector<int> A{};
   cin >> N;

@@ -8,9 +8,7 @@ using namespace std;
 uint64_t P[5001];
 int64_t C[5001], PC[5001][5001];
 
-int
-main()
-{
+int main() {
   uint64_t N, K;
   cin >> N >> K;
   for (size_t i = 1; i <= N; i++) {

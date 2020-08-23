@@ -3,9 +3,7 @@
 #include <string>
 using namespace std;
 
-int
-main()
-{
+int main() {
   int64_t X, K, D;
   cin >> X >> K >> D;
 
