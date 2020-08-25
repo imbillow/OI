@@ -1,5 +1,7 @@
-*
 !**/*.cpp
 !**/*.c
+!**/*.d
+!**/.gitignore
+!**/.json
 !**/*.md
 !**/.clang-format

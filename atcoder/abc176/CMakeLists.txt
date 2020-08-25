@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.15)
+
+project(abc176)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+file(GLOB files *.cpp)
+set(lib m)
+
+foreach (file ${files})
+    string(REGEX REPLACE "(^/.+/)|(.cpp$)" "" name ${file})
+    message("configure ${name}")
+    add_executable(${name} ${file})
+    target_link_libraries(${name} ${lib})
+endforeach ()
