@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/abc177
+abc177.so
+abc177.dylib
+abc177.dll
+abc177.a
+abc177.lib
+abc177-test-*
+*.exe
+*.o
+*.obj
+*.lst
