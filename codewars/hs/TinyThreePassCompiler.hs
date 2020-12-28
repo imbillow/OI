@@ -132,4 +132,13 @@ muI = "MU" -- multiply R0 by R1 and put the result in R0
 diI = "DI" -- divide R0 by R1 and put the result in R0
 
 pass3 :: AST -> [String]
-pass3 ast = undefined
+pass3 ast =
+  case ast of
+    Add a b -> op2 adI a b
+    Sub a b -> op2 suI a b
+    Mul a b -> op2 muI a b
+    Div a b -> op2 diI a b
+    Imm i -> [imI i]
+    Arg i -> [arI i]
+  where
+    op2 i a b = pass3 a ++ [puI] ++ pass3 b ++ [swI, poI, i]
