@@ -1,10 +1,10 @@
-{-# LANGUAGE TupleSections #-}
-
 module TinyThreePassCompiler where
 
+import Data.Either
 import Data.Functor
 import Data.List
 import Data.Maybe
+import Text.Parsec
 
 data AST
   = Imm Int
@@ -13,45 +13,15 @@ data AST
   | Sub AST AST
   | Mul AST AST
   | Div AST AST
+  | Name String
   deriving (Eq, Show)
-
-data Token
-  = TChar Char
-  | TInt Int
-  | TStr String
-  | TokEnd
-  deriving (Eq, Show)
-
-alpha, digit :: String
-alpha = ['a' .. 'z'] ++ ['A' .. 'Z']
-digit = ['0' .. '9']
-
-tokenize :: String -> [Token]
-tokenize [] = []
-tokenize xxs@(c : cs)
-  | c `elem` "-+*/()[]" = TChar c : tokenize cs
-  | not (null i) = TInt (read i) : tokenize is
-  | not (null s) = TStr s : tokenize ss
-  | otherwise = tokenize cs
-  where
-    (i, is) = span (`elem` digit) xxs
-    (s, ss) = span (`elem` alpha) xxs
 
 compile :: String -> [String]
 compile = pass3 . pass2 . pass1
 
-argumemts :: [Token] -> ([String], [Token])
-argumemts ts = arg ts []
-  where
-    arg ts =
-      case lookAhead ts of
-        TChar c
-          | c == '[' -> arg $ accept ts
-          | c == ']' -> (,accept ts)
-        TStr s -> arg (accept ts) . (++ [s])
-        _ -> error ""
+type Operator = AST -> AST -> AST
 
-op :: Char -> AST -> AST -> AST
+op :: Char -> Operator
 op x =
   case x of
     '+' -> Add
@@ -60,49 +30,49 @@ op x =
     '/' -> Div
     _ -> error "impossible"
 
-lookAhead :: [Token] -> Token
-lookAhead [] = TokEnd
-lookAhead ts = head ts
+opOf :: [Char] -> Parsec String st Operator
+opOf xs =
+  op <$> oneOf xs <* spaces
 
-accept :: [Token] -> [Token]
-accept [] = error "Nothing to accept"
-accept ts = tail ts
+immP, argP, exprP, termP, factorP :: Parsec String st AST
+immP = Imm . read <$> many1 digit <* spaces
+argP = Name <$> many1 letter <* spaces
+exprP = spaces *> (chainl1 termP (opOf "+-") <* spaces)
+termP = chainl1 factorP (opOf "*/") <* spaces
+factorP = choice [immP, argP, pareP] <* spaces
+  where
+    pareP = between (char '(') (char ')') exprP
 
-expression, term, factor :: [String] -> [Token] -> (AST, [Token])
-expression args toks =
-  let (t, toks') = term args toks
-   in case lookAhead toks' of
-        (TChar c)
-          | c `elem` "+-" ->
-            let (e, toks'') = expression args $ accept toks'
-             in (op c t e, toks'')
-        _ -> (t, toks')
-term args toks =
-  let (f, toks') = factor args toks
-   in case lookAhead toks' of
-        (TChar c)
-          | c `elem` "*/" ->
-            let (t, toks'') = term args $ accept toks'
-             in (op c f t, toks'')
-        _ -> (f, toks')
-factor args toks =
-  case lookAhead toks of
-    TInt i -> (Imm i, accept toks)
-    TStr s -> (Arg $ fromJust $ elemIndex s args, accept toks)
-    TChar '(' ->
-      let (expr, toks') = expression args $ accept toks
-       in if lookAhead toks' /= TChar ')'
-            then error "Missing right parenthesis"
-            else (expr, accept toks')
-    _ -> error $ "Parse error on token: " ++ show toks
-
-parse :: [Token] -> AST
-parse xs =
-  let (args, xs') = argumemts xs
-   in fst $ expression args xs'
+argsP :: Parsec String st [String]
+argsP =
+  spaces
+    *> between
+      (char '[' <* spaces)
+      (char ']')
+      (many $ many1 letter <* spaces)
 
 pass1 :: String -> AST
-pass1 = parse . tokenize
+pass1 inp =
+  let (l, _ : r) = break (`elem` "[]") $ tail inp
+      ast =
+        do
+          args <- parse argsP "" $ '[' : l ++ "]"
+          ast' <- parse exprP "" r
+          return $ rewrite ast' args
+   in case ast of
+        Right ast' -> ast'
+        Left e -> error $ show e
+  where
+    rewrite ast args =
+      case ast of
+        Name n -> Arg $ fromJust $ elemIndex n args
+        Mul a b -> f Mul a b
+        Div a b -> f Div a b
+        Add a b -> f Add a b
+        Sub a b -> f Sub a b
+        _ -> ast
+      where
+        f o a b = o (rewrite a args) $ rewrite b args
 
 pass2 :: AST -> AST
 pass2 ast =
@@ -118,27 +88,14 @@ pass2 ast =
         (Imm a', Imm b') -> Imm $ f1 a' b'
         (a', b') -> f2 a' b'
 
-imI, arI :: Int -> String
-imI n = "IM " ++ show n -- load the constant value n into R0
-arI n = "AR " ++ show n -- load the n-th input argument into R0
-
-swI, puI, poI, adI, suI, muI, diI :: String
-swI = "SW" -- swap R0 and R1
-puI = "PU" -- push R0 onto the stack
-poI = "PO" -- pop the top value off of the stack into R0
-adI = "AD" -- add R1 to R0 and put the result in R0
-suI = "SU" -- subtract R1 from R0 and put the result in R0
-muI = "MU" -- multiply R0 by R1 and put the result in R0
-diI = "DI" -- divide R0 by R1 and put the result in R0
-
 pass3 :: AST -> [String]
 pass3 ast =
   case ast of
-    Add a b -> op2 adI a b
-    Sub a b -> op2 suI a b
-    Mul a b -> op2 muI a b
-    Div a b -> op2 diI a b
-    Imm i -> [imI i]
-    Arg i -> [arI i]
+    Add a b -> op2 "AD" a b
+    Sub a b -> op2 "SU" a b
+    Mul a b -> op2 "MU" a b
+    Div a b -> op2 "DI" a b
+    Imm i -> ["IM " ++ show i]
+    Arg i -> ["AR " ++ show i]
   where
-    op2 i a b = pass3 a ++ [puI] ++ pass3 b ++ [swI, poI, i]
+    op2 i a b = pass3 a ++ ["PU"] ++ pass3 b ++ ["SW", "PO", i]
