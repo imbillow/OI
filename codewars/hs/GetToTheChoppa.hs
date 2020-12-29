@@ -15,7 +15,7 @@ type Path = [Pos]
 
 shortestPath :: Grid -> Pos -> Pos -> Path
 shortestPath g _ _ | null g || null (head g) = []
-shortestPath g a@(x0, y0) b = fromJust $ visit S.empty a
+shortestPath g a b = fromJust $ visit S.empty [(a, [a])]
   where
     (w, h) = (length $ head g, length g)
     succsor (x, y) =
@@ -27,15 +27,19 @@ shortestPath g a@(x0, y0) b = fromJust $ visit S.empty a
         $ map
           (\(x', y') -> (x' + x, y' + y))
           [(-1, 0), (1, 0), (0, -1), (0, 1)]
-    visit :: S.Set Pos -> Pos -> Maybe Path
-    visit _ a | a == b = Just [b]
-    visit visited a =
-      join . find isJust $
-        map
-          (\pos -> (a :) <$> visit (S.insert pos visited) pos)
-          ( filter (`S.notMember` visited) $
-              succsor a
+    visit :: S.Set Pos -> [(Pos, Path)] -> Maybe Path
+    visit _ pp
+      | isJust path = fmap reverse path
+      where
+        path = lookup b pp
+    visit visited pp =
+      visit (S.union visited $ S.fromList (map fst pp)) $
+        concatMap
+          ( \(pos, path) ->
+              map (\p -> (p, p : path)) $
+                filter (`S.notMember` visited) $ succsor pos
           )
+          pp
 
 -- Convert a string representation into a grid
 toGrid = map (map (\c -> if c == '1' then NotPassable else Passable)) . words
