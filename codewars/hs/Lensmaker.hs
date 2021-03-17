@@ -87,6 +87,13 @@ type Prism s t a b =
 ---------------------------------------------------------
 -- Todo
 
+{-
+
+a -> (f b) -> s -> (f t)
+(a, b) -> a
+
+-}
+
 -- | A lens focusing on the first element in a pair
 _1 :: Lens (a, x) (b, x) a b
 _1 = error "todo"
