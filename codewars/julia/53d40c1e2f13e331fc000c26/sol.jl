@@ -8,5 +8,5 @@ function fib(n::Int)
           fib_iter(b * q + a * q + a * p, b * p + a * q, p, q, count - 1)
         end
     end
-    n >= 0 ? fib_iter(big(1), big(0), big(0), big(1), n) : - fib(-n)
+    n >= 0 ? fib_iter(big(1), big(0), big(0), big(1), n) : isodd(n) ? fib(-n) : - fib(-n)
 end
